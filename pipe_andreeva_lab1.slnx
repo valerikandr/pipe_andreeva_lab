@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="pipe_andreeva_lab1/pipe_andreeva_lab1.vcxproj" />
+</Solution>
