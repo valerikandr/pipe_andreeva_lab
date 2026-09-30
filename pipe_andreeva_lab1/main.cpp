@@ -9,17 +9,17 @@ using namespace std;
 struct Pipe
 {
 	string name;
-	double l;
-	int d;
-	bool vremonte;
+	int l = 0;
+	int d = 0;
+	bool vremonte = false;
 };
 
 struct CS
 {
 	string name;
-	int cehvsego;
-	int cehwork;
-	int classstation;
+	int cehvsego = 0;
+	int cehwork = 0;
+	int classstation = 0;
  };
 
 void Menu() {
@@ -190,15 +190,16 @@ void SaveFile(const Pipe& pipe, const CS& station,
 }
 
 void ZagruzkaPipe(ifstream& fin, Pipe& pipe) {
-	fin >> pipe.name
-		>> pipe.l
+	getline(fin, pipe.name);
+	fin >> pipe.l
 		>> pipe.d
 		>> pipe.vremonte;
+	fin.ignore();
 }
 
 void ZagruzkaCS(ifstream& fin, CS& station) {
-	fin >> station.name
-		>> station.cehvsego
+	getline(fin, station.name);
+	fin >> station.cehvsego
 		>> station.cehwork
 		>> station.classstation;
 }
