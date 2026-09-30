@@ -11,7 +11,7 @@ struct Pipe
 	string name;
 	int l = 0;
 	int d = 0;
-	bool vremonte = false;
+	bool vremonte = 0;
 };
 
 struct CS
@@ -19,7 +19,7 @@ struct CS
 	string name;
 	int cehvsego = 0;
 	int cehwork = 0;
-	int classstation = 0;
+	int classstation = 0 ;
  };
 
 void Menu() {
@@ -224,8 +224,8 @@ void Zagruzka(Pipe& pipe, CS& station,
 
 	fin.close();
 
-	hasPipe = true;
-	hasStation = true;
+	hasPipe = !pipe.name.empty();
+	hasStation = !station.name.empty();
 
 	cout << "Данные загружены из " << filename << "\n";
 }
