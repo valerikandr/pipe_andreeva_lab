@@ -21,6 +21,7 @@ public:
     void setId(int newId);
     void EditCS();
     bool CheckCS() const;
-
     friend std::ostream& operator<<(std::ostream& out, const CS& station);
+    bool CheckName(const std::string& value) const;
+    bool CheckPercent(int percent) const;
 };

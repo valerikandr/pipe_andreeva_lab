@@ -20,6 +20,8 @@ void Menu() {
 		<< "7. Загрузить\n"
 		<< "8. Удалить трубу\n"
 	    << "9. Удалить КС\n"
+		<< "10. Поиск труб\n"
+		<< "11. Поиск КС\n"
 		<< "0. Выход \n";
 }
 
@@ -177,6 +179,84 @@ void Zagruzka(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations,
 	cout << "Данные загружены из " << filename << "\n";
 }
 
+void Poisk(const unordered_map<int, Pipe>& pipes) {
+	string name;
+	cout << "Введите название трубы: ";
+	getline(cin >> ws, name);
+
+	bool found = false;
+	for (const auto& pipe : pipes) {
+		if (pipe.second.CheckName(name)) {
+			cout << pipe.second;
+			found = true;
+		}
+	}
+	if (!found) cout << "Трубы не найдены\n";
+}
+
+void PoiskRepair(const unordered_map<int, Pipe>& pipes) {
+	cout << "В ремонте? 1 - да, 0 - нет: ";
+	int value = Diapozon(0, 1);
+
+	bool found = false;
+	for (const auto& pipe : pipes) {
+		if (pipe.second.CheckRepair(value)) {
+			cout << pipe.second;
+			found = true;
+		}
+	}
+	if (!found) cout << "Трубы не найдены\n";
+}
+
+void PoiskCS(const unordered_map<int, CS>& stations) {
+	string name;
+	cout << "Введите название КС: ";
+	getline(cin >> ws, name);
+
+	bool found = false;
+	for (const auto& station : stations) {
+		if (station.second.CheckName(name)) {
+			cout << station.second;
+			found = true;
+		}
+	}
+	if (!found) cout << "КС не найдены\n";
+}
+
+void PoiskPercent(const unordered_map<int, CS>& stations) {
+	cout << "Минимальный процент незадействованных цехов: ";
+	int percent = Diapozon(0, 100);
+
+	bool found = false;
+	for (const auto& station : stations) {
+		if (station.second.CheckPercent(percent)) {
+			cout << station.second;
+			found = true;
+		}
+	}
+	if (!found) cout << "КС не найдены\n";
+}
+
+void PoiskPipe(const unordered_map<int, Pipe>& pipes) {
+	cout << "1. По названию\n2. По ремонту\n";
+	int choice = Diapozon(1, 2);
+
+	if (choice == 1)
+		Poisk(pipes);
+	else
+		PoiskRepair(pipes);
+}
+
+void PoiskStation(const unordered_map<int, CS>& stations) {
+	cout << "1. По названию\n2. По проценту цехов\n";
+	int choice = Diapozon(1, 2);
+
+	if (choice == 1)
+		PoiskCS(stations);
+	else
+		PoiskPercent(stations);
+}
+
 int main() {
 	SetConsoleCP(65001);
 	SetConsoleOutputCP(65001);
@@ -192,7 +272,7 @@ int main() {
 	while (true) {
 		Menu();
 		cout << "Введите команду: ";
-		number = Diapozon(0, 9);
+		number = Diapozon(0, 13);
 
 		switch (number) {
 
@@ -236,6 +316,14 @@ int main() {
 
 		case 9:
 			DeleteCS(stations);
+			break;
+
+		case 10:
+			PoiskPipe(pipes);
+			break;
+
+		case 11:
+			PoiskStation(stations);
 			break;
 
 		case 0:

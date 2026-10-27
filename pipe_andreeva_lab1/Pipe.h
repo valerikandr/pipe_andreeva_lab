@@ -21,4 +21,6 @@ public:
     void setId(int newId);
     void EditPipe();
     bool CheckPipe() const;
+    bool CheckName(const std::string& value) const;
+    bool CheckRepair(bool value) const;
 };

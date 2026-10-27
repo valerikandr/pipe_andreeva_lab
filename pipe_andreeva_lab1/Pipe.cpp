@@ -60,3 +60,11 @@ void Pipe::EditPipe() {
 bool Pipe::CheckPipe() const {
 	return id > 0 && !name.empty() && l > 0 && d > 0;
 }
+
+bool Pipe::CheckName(const string& value) const {
+	return name.find(value) != string::npos;
+}
+
+bool Pipe::CheckRepair(bool value) const {
+	return vremonte == value;
+}

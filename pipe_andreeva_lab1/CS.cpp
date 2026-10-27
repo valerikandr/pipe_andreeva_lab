@@ -70,3 +70,11 @@ void CS::EditCS() {
     }
     else cout << "Невозможно выполнить действие\n";
 }
+
+bool CS::CheckName(const string& value) const {
+    return name.find(value) != string::npos;
+}
+
+bool CS::CheckPercent(int percent) const {
+    return (cehvsego - cehwork) * 100.0 / cehvsego >= percent;
+}
