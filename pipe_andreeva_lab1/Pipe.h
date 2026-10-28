@@ -23,4 +23,5 @@ public:
     bool CheckPipe() const;
     bool CheckName(const std::string& value) const;
     bool CheckRepair(bool value) const;
+    void SetRepair(bool value);
 };

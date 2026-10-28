@@ -55,6 +55,7 @@ void Pipe::EditPipe() {
 	cout << "Сейчас в ремонте: " << vremonte << "\n";
 	cout << "Новое значение (Да - 1, Нет - 0): ";
 	vremonte = Diapozon(0, 1);
+	cerr << "Новое состояние ремонта трубы: " << vremonte << "\n";
 }
 
 bool Pipe::CheckPipe() const {
@@ -67,4 +68,8 @@ bool Pipe::CheckName(const string& value) const {
 
 bool Pipe::CheckRepair(bool value) const {
 	return vremonte == value;
+}
+
+void Pipe::SetRepair(bool value) {
+	vremonte = value;
 }

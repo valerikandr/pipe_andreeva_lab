@@ -62,13 +62,18 @@ void CS::EditCS() {
 
     if (action == 1 && cehwork < cehvsego) {
         cehwork++;
+        cerr << "Запущен цех КС ID: " << id << "\n";
         cout << "Цех запущен\n";
     }
     else if (action == 2 && cehwork > 0) {
         cehwork--;
+        cerr << "Остановлен цех КС ID: " << id << "\n";
         cout << "Цех остановлен\n";
     }
-    else cout << "Невозможно выполнить действие\n";
+    else {
+        cout << "Невозможно выполнить действие\n";
+        cerr << "Не удалось изменить КС ID: " << id << "\n";
+    }
 }
 
 bool CS::CheckName(const string& value) const {
