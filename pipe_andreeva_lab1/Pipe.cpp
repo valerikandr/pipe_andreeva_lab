@@ -1,10 +1,20 @@
 #include "Pipe.h"
 #include <iostream>
-#include "Utils.h"
 
 using namespace std;
 
 int Diapozon(int min, int max);
+
+void Pipe::Newpipe() {
+	cout << "Введите название трубы: ";
+	getline(cin >> ws, name);
+	cout << "Введите длину: ";
+	l = Diapozon(1, 1000000);
+	cout << "Введите диаметр: ";
+	d = Diapozon(1, 1000000);
+	cout << "В ремонте? Введите 1 - да, 0 - нет ";
+	vremonte = Diapozon(0, 1);
+}
 
 ostream& operator<<(ostream& out, const Pipe& pipe) {
 	out << "ID трубы: " << pipe.id;
@@ -15,35 +25,22 @@ ostream& operator<<(ostream& out, const Pipe& pipe) {
 	return out;
 }
 
-ofstream& operator<<(ofstream& out, const Pipe& pipe) {
-	out << pipe.id << "\n"
-		<< pipe.name << "\n"
-		<< pipe.l << "\n"
-		<< pipe.d << "\n"
-		<< pipe.vremonte << "\n";
-	return out;
+void Pipe::SavePipe(ofstream& fout) const {
+	fout << id << "\n"
+		<< name << "\n"
+		<< l << "\n"
+		<< d << "\n"
+		<< vremonte << "\n";
 }
 
-ifstream& operator>>(ifstream& in, Pipe& pipe) {
-	in >> pipe.id;
-	getline(in >> ws, pipe.name);
-	in >> pipe.l >> pipe.d >> pipe.vremonte;
-	return in;
-}
-
-istream& operator>>(istream& in, Pipe& pipe) {
-	cout << "Введите название трубы: ";
-	INPUT_LINE(in, pipe.name);
-
-	cout << "Введите длину: ";
-	pipe.l = Diapozon(1, 1000000);
-
-	cout << "Введите диаметр: ";
-	pipe.d = Diapozon(1, 1000000);
-
-	cout << "В ремонте? 1 - да, 0 - нет: ";
-	pipe.vremonte = Diapozon(0, 1);
-	return in;
+void Pipe::ZagruzkaPipe(ifstream& fin) {
+	fin >> id;
+	fin.ignore();
+	getline(fin, name);
+	fin >> l
+		>> d
+		>> vremonte;
+	fin.ignore();
 }
 
 int Pipe::getId() const {
