@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <vector>
+#include <unordered_set>
 #include <unordered_map>
 #include "Pipe.h"
 #include "CS.h"
@@ -32,7 +32,24 @@ void Menu() {
 }
 
 int Diapozon(int min, int max) {
-	return LogCin(min, max);
+	return GetCorrectNumber(min, max);
+}
+
+bool FilterPipeName(const Pipe& pipe, string name) {
+	return pipe.CheckName(name);
+}
+
+bool FilterPipeRepair(const Pipe& pipe, bool repair) {
+	return pipe.CheckRepair(repair);
+}
+
+bool FilterCSName(const CS& station, string name) {
+	return station.CheckName(name);
+}
+
+
+bool FilterCSPercent(const CS& station, int percent) {
+	return station.CheckPercent(percent);
 }
 
 void Vseobjects(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS>& stations) {
@@ -125,11 +142,11 @@ void SaveFile(const unordered_map<int, Pipe>& pipes, const unordered_map<int, CS
 
 	fout << pipes.size() << "\n";
 	for (const auto& pipe : pipes)
-		pipe.second.SavePipe(fout);
+		fout << pipe.second;
 
 	fout << stations.size() << "\n";
 	for (const auto& station : stations)
-		station.second.SaveCS(fout);
+		fout << station.second;
 
 	fout.close();
 	cerr << "Данные сохранены в " << filename << "\n";
@@ -140,7 +157,7 @@ bool ZagruzkaPipes(ifstream& fin, unordered_map<int, Pipe>& pipes, int& nextPipe
 	if (!(fin >> count) || count < 0 || count > 1000000) return false;
 	for (int i = 0; i < count; i++) {
 		Pipe pipe;
-		pipe.ZagruzkaPipe(fin);
+		fin >> pipe;
 		if (!fin || !pipe.CheckPipe() || pipes.count(pipe.getId())) return false;
 		pipes.emplace(pipe.getId(), pipe);
 		if (pipe.getId() >= nextPipeId) nextPipeId = pipe.getId() + 1;
@@ -153,7 +170,7 @@ bool ZagruzkaStations(ifstream& fin, unordered_map<int, CS>& stations, int& next
 	if (!(fin >> count) || count < 0 || count > 1000000) return false;
 	for (int i = 0; i < count; i++) {
 		CS station;
-		station.ZagruzkaCS(fin);
+		fin >> station;
 		if (!fin || !station.CheckCS() || stations.count(station.getId())) return false;
 		stations.emplace(station.getId(), station);
 		if (station.getId() >= nextCSId) nextCSId = station.getId() + 1;
@@ -199,32 +216,36 @@ void Poisk(const unordered_map<int, Pipe>& pipes) {
 	cout << "Введите название трубы: ";
 	INPUT_LINE(cin, name);
 
-	bool found = false;
-	for (const auto& pipe : pipes) {
-		if (pipe.second.CheckName(name)) {
-			cout << pipe.second;
-			found = true;
-		}
+	auto found = FindByFilter(pipes, FilterPipeName, name);
+
+	if (found.empty()) {
+		cout << "Трубы не найдены\n";
+		cerr << "Объекты не найдены\n";
+		return;
 	}
-	cerr << "Результат поиска: "
-		<< (found ? "Объекты найдены" : "Объекты не найдены") << "\n";
-	if (!found) cout << "Трубы не найдены\n";
+
+	for (int id : found)
+		cout << pipes.at(id);
+
+	cerr << "Объекты найдены\n";
 }
 
 void PoiskRepair(const unordered_map<int, Pipe>& pipes) {
 	cout << "В ремонте? 1 - да, 0 - нет: ";
-	int value = Diapozon(0, 1);
+	bool value = Diapozon(0, 1);
 
-	bool found = false;
-	for (const auto& pipe : pipes) {
-		if (pipe.second.CheckRepair(value)) {
-			cout << pipe.second;
-			found = true;
-		}
+	auto found = FindByFilter(pipes, FilterPipeRepair, value);
+
+	if (found.empty()) {
+		cout << "Трубы не найдены\n";
+		cerr << "Объекты не найдены\n";
+		return;
 	}
-	cerr << "Результат поиска: "
-		<< (found ? "Объекты найдены" : "Объекты не найдены") << "\n";
-	if (!found) cout << "Трубы не найдены\n";
+
+	for (int id : found)
+		cout << pipes.at(id);
+
+	cerr << "Объекты найдены\n";
 }
 
 void PoiskCS(const unordered_map<int, CS>& stations) {
@@ -232,32 +253,36 @@ void PoiskCS(const unordered_map<int, CS>& stations) {
 	cout << "Введите название КС: ";
 	INPUT_LINE(cin, name);
 
-	bool found = false;
-	for (const auto& station : stations) {
-		if (station.second.CheckName(name)) {
-			cout << station.second;
-			found = true;
-		}
+	auto found = FindByFilter(stations, FilterCSName, name);
+
+	if (found.empty()) {
+		cout << "КС не найдены\n";
+		cerr << "Объекты не найдены\n";
+		return;
 	}
-	cerr << "Результат поиска: "
-		<< (found ? "Объекты найдены" : "Объекты не найдены") << "\n";
-	if (!found) cout << "КС не найдены\n";
+
+	for (int id : found)
+		cout << stations.at(id);
+
+	cerr << "Объекты найдены\n";
 }
 
 void PoiskPercent(const unordered_map<int, CS>& stations) {
 	cout << "Минимальный процент незадействованных цехов: ";
 	int percent = Diapozon(0, 100);
 
-	bool found = false;
-	for (const auto& station : stations) {
-		if (station.second.CheckPercent(percent)) {
-			cout << station.second;
-			found = true;
-		}
+	auto found = FindByFilter(stations, FilterCSPercent, percent);
+
+	if (found.empty()) {
+		cout << "КС не найдены\n";
+		cerr << "Объекты не найдены\n";
+		return;
 	}
-	cerr << "Результат поиска: "
-		<< (found ? "Объекты найдены" : "Объекты не найдены") << "\n";
-	if (!found) cout << "КС не найдены\n";
+
+	for (int id : found)
+		cout << stations.at(id);
+
+	cerr << "Объекты найдены\n";
 }
 
 void PoiskPipe(const unordered_map<int, Pipe>& pipes) {
@@ -280,21 +305,21 @@ void PoiskStation(const unordered_map<int, CS>& stations) {
 		PoiskPercent(stations);
 }
 
-vector<int> ViborPipe(const vector<int>& found) {
-	vector<int> ids;
+unordered_set<int> ViborPipe(const unordered_set<int>& found) {
+	unordered_set<int> ids;
+
 	cout << "1. Все найденные\n2. Выбрать по ID\n";
 	int choice = Diapozon(1, 2);
 
 	if (choice == 1) return found;
 
-	cout << "Введите ID (введите 0, чтобы закончить:) ";
+	cout << "Введите ID (0 - закончить): ";
 	while (true) {
 		int id = Diapozon(0, 1000000);
 		if (id == 0) break;
 
-		if (find(found.begin(), found.end(), id) != found.end()
-			&& find(ids.begin(), ids.end(), id) == ids.end()) {
-			ids.push_back(id);
+		if (found.count(id) && !ids.count(id)) {
+			ids.insert(id);
 			cerr << "Выбрана труба ID: " << id << "\n";
 		}
 		else {
@@ -305,37 +330,30 @@ vector<int> ViborPipe(const vector<int>& found) {
 	return ids;
 }
 
-vector<int> FindPipes(const unordered_map<int, Pipe>& pipes) {
-	vector<int> found;
+unordered_set<int> FindPipes(const unordered_map<int, Pipe>& pipes) {
 	cout << "1. По названию\n2. По ремонту\n";
 	int choice = Diapozon(1, 2);
 
-	string name;
-	int value = 0;
-
 	if (choice == 1) {
+		string name;
 		cout << "Введите название: ";
 		INPUT_LINE(cin, name);
-	}
-	else {
-		cout << "В ремонте? 1 - да, 0 - нет: ";
-		value = Diapozon(0, 1);
+		return FindByFilter(pipes, FilterPipeName, name);
 	}
 
-	for (const auto& pipe : pipes)
-		if (choice == 1 ? pipe.second.CheckName(name) :
-			pipe.second.CheckRepair(value))
-			found.push_back(pipe.first);
-
-	return found;
+	cout << "В ремонте? 1 - да, 0 - нет: ";
+	bool repair = Diapozon(0, 1);
+	return FindByFilter(pipes, FilterPipeRepair, repair);
 }
 
-void ChangePipes(unordered_map<int, Pipe>& pipes, const vector<int>& ids) {
+void ChangePipes(unordered_map<int, Pipe>& pipes,
+	const unordered_set<int>& ids) {
+
 	cout << "Новое состояние ремонта (0 или 1): ";
 	int value = Diapozon(0, 1);
 
 	for (int id : ids)
-		pipes.at(id).SetRepair(value);
+		pipes[id].SetRepair(value);
 
 	cerr << "Изменено труб: " << ids.size()
 		<< ", состояние ремонта: " << value << "\n";
@@ -343,7 +361,9 @@ void ChangePipes(unordered_map<int, Pipe>& pipes, const vector<int>& ids) {
 	cout << "Трубы изменены\n";
 }
 
-void RemovePipes(unordered_map<int, Pipe>& pipes, const vector<int>& ids) {
+void RemovePipes(unordered_map<int, Pipe>& pipes,
+	const unordered_set<int>& ids) {
+
 	for (int id : ids)
 		pipes.erase(id);
 
@@ -353,7 +373,7 @@ void RemovePipes(unordered_map<int, Pipe>& pipes, const vector<int>& ids) {
 
 
 void PaketPipe(unordered_map<int, Pipe>& pipes) {
-	vector<int> found = FindPipes(pipes);
+	unordered_set<int> found = FindPipes(pipes);
 
 	if (found.empty()) {
 		cout << "Трубы не найдены\n";
@@ -363,7 +383,7 @@ void PaketPipe(unordered_map<int, Pipe>& pipes) {
 	for (int id : found)
 		cout << pipes.at(id);
 
-	vector<int> ids = ViborPipe(found);
+	unordered_set<int> ids = ViborPipe(found);
 	if (ids.empty()) return;
 
 	cout << "1. Изменить ремонт\n2. Удалить\n";
@@ -377,7 +397,7 @@ void PaketPipe(unordered_map<int, Pipe>& pipes) {
 
 void AddPipe(unordered_map<int, Pipe>& pipes, int& nextPipeId) {
 	Pipe pipe;
-	pipe.Newpipe();
+	cin >> pipe;
 	pipe.setId(nextPipeId++);
 	pipes.emplace(pipe.getId(), pipe);
 	cerr << "Добавлена труба ID: " << pipe.getId() << "\n";
@@ -385,7 +405,7 @@ void AddPipe(unordered_map<int, Pipe>& pipes, int& nextPipeId) {
 
 void AddCS(unordered_map<int, CS>& stations, int& nextCSId) {
 	CS station;
-	station.Newcs();
+	cin >> station;
 	station.setId(nextCSId++);
 	stations.emplace(station.getId(), station);
 	cerr << "Добавлена КС ID: " << station.getId() << "\n";
@@ -408,7 +428,8 @@ int main() {
 		return 1;
 	}
 
-	streambuf* oldCerr = cerr.rdbuf(logfile.rdbuf());
+	redirect_output_wrapper log(cerr);
+	log.redirect(logfile);
 
 	unordered_map<int, Pipe> pipes;
 	unordered_map<int, CS> stations;
@@ -445,7 +466,7 @@ int main() {
 			EditCS(stations);
 			break;
 
-		case 6:
+		case 6: 
 			SaveFile(pipes, stations);
 			break;
 
@@ -474,9 +495,8 @@ int main() {
 			break;
 
 		case 0:
-			cout << "Выход \n";
+			cout << "Выход\n";
 			cerr << "Выход из программы\n";
-			cerr.rdbuf(oldCerr);
 			return 0;
 		}
 	}

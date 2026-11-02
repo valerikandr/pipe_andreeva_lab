@@ -1,36 +1,10 @@
 #include "CS.h"
 #include <iostream>
+#include "Utils.h"
 
 using namespace std;
 
 int Diapozon(int min, int max);
-
-void CS::Newcs() {
-    cout << "Введите название КС: ";
-    getline(cin >> ws, name);
-    cout << "Введите общее количество цехов: ";
-    cehvsego = Diapozon(1, 1000000);
-    cout << "Введите количество работающих цехов: ";
-    cehwork = Diapozon(0, cehvsego);
-    cout << "Введите класс станции (1 или 2): ";
-    classstation = Diapozon(1, 2);
-}
-
-void CS::SaveCS(ofstream& fout) const {
-    fout << id << "\n"
-        << name << "\n"
-        << cehvsego << "\n"
-        << cehwork << "\n"
-        << classstation << "\n";
-}
-
-void CS::ZagruzkaCS(ifstream& fin) {
-    fin >> id;
-    fin.ignore();
-    getline(fin, name);
-    fin >> cehvsego >> cehwork >> classstation;
-    fin.ignore();
-}
 
 ostream& operator<<(ostream& out, const CS& station) {
     out << "ID КС: " << station.id;
@@ -39,6 +13,39 @@ ostream& operator<<(ostream& out, const CS& station) {
     out << "\n Работающих цехов: " << station.cehwork;
     out << "\n Класс станции: " << station.classstation << "\n";
     return out;
+}
+
+ofstream& operator<<(ofstream& out, const CS& station) {
+    out << station.id << "\n"
+        << station.name << "\n"
+        << station.cehvsego << "\n"
+        << station.cehwork << "\n"
+        << station.classstation << "\n";
+    return out;
+}
+
+ifstream& operator>>(ifstream& in, CS& station) {
+    in >> station.id;
+    getline(in >> ws, station.name);
+    in >> station.cehvsego
+        >> station.cehwork
+        >> station.classstation;
+    return in;
+}
+
+istream& operator>>(istream& in, CS& station) {
+    cout << "Введите название КС: ";
+    INPUT_LINE(in, station.name);
+
+    cout << "Введите общее количество цехов: ";
+    station.cehvsego = Diapozon(1, 1000000);
+
+    cout << "Введите количество работающих цехов: ";
+    station.cehwork = Diapozon(0, station.cehvsego);
+
+    cout << "Введите класс станции (1 или 2): ";
+    station.classstation = Diapozon(1, 2);
+    return in;
 }
 
 int CS::getId() const {

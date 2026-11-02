@@ -13,10 +13,10 @@ private:
     int id = 0;
 
 public:
-    void Newpipe();
-    void SavePipe(std::ofstream& fout) const;
-    void ZagruzkaPipe(std::ifstream& fin);
     friend std::ostream& operator<<(std::ostream& out, const Pipe& pipe);
+    friend std::istream& operator>>(std::istream& in, Pipe& pipe);
+    friend std::ofstream& operator<<(std::ofstream& out, const Pipe& pipe);
+    friend std::ifstream& operator>>(std::ifstream& in, Pipe& pipe);
     int getId() const;
     void setId(int newId);
     void EditPipe();
