@@ -31,16 +31,27 @@ public:
 template <typename T>
 T GetCorrectNumber(T min, T max) {
     T x;
-    while ((std::cin >> x).fail() ||
-        std::cin.peek() != '\n' ||
-        x < min || x > max) {
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
+
+    while (true) {
+        if (!(std::cin >> x)) {
+            if (std::cin.eof()) {
+                std::exit(0);
+            }
+
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+        }
+        else if (std::cin.peek() != '\n' || x < min || x > max) {
+            std::cin.ignore(10000, '\n');
+        }
+        else {
+            std::cerr << x << std::endl;
+            return x;
+        }
+
         std::cout << "Ошибка! Введите число от "
             << min << " до " << max << ": ";
     }
-    std::cerr << x << std::endl;
-    return x;
 }
 
 template<typename Obj, typename T>

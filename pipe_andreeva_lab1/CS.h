@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
 
 class CS
 {
@@ -11,12 +12,15 @@ private:
     int cehwork = 0;
     int classstation = 0;
     int id = 0;
+    static int MaxID;
 
 public:
     int getId() const;
-    void setId(int newId);
     void EditCS();
     bool CheckCS() const;
+    CS();
+    explicit CS(int loadedId);
+    static void UpdateMaxID(const std::unordered_map<int, CS>& CSs);
     friend std::ostream& operator<<(std::ostream& out, const CS& station);
     friend std::istream& operator>>(std::istream& in, CS& station);
     friend std::ofstream& operator<<(std::ofstream& out, const CS& station);

@@ -1,10 +1,26 @@
 #include "CS.h"
 #include <iostream>
 #include "Utils.h"
+#include <climits>
 
 using namespace std;
 
-int Diapozon(int min, int max);
+int CS::MaxID = 1;
+
+CS::CS() {
+    id = MaxID++;
+}
+
+CS::CS(int loadedId) {
+    id = loadedId;
+}
+
+void CS::UpdateMaxID(const unordered_map<int, CS>& CSs) {
+    MaxID = 1;
+    for (const auto& [id, station] : CSs)
+        if (id >= MaxID)
+            MaxID = id + 1;
+}
 
 ostream& operator<<(ostream& out, const CS& station) {
     out << "ID КС: " << station.id;
@@ -30,6 +46,7 @@ ifstream& operator>>(ifstream& in, CS& station) {
     in >> station.cehvsego
         >> station.cehwork
         >> station.classstation;
+
     return in;
 }
 
@@ -38,13 +55,13 @@ istream& operator>>(istream& in, CS& station) {
     INPUT_LINE(in, station.name);
 
     cout << "Введите общее количество цехов: ";
-    station.cehvsego = Diapozon(1, 1000000);
+    station.cehvsego = GetCorrectNumber(1, 1000000);
 
     cout << "Введите количество работающих цехов: ";
-    station.cehwork = Diapozon(0, station.cehvsego);
+    station.cehwork = GetCorrectNumber(0, station.cehvsego);
 
     cout << "Введите класс станции (1 или 2): ";
-    station.classstation = Diapozon(1, 2);
+    station.classstation = GetCorrectNumber(1, 2);
     return in;
 }
 
@@ -52,12 +69,9 @@ int CS::getId() const {
     return id;
 }
 
-void CS::setId(int newId) {
-    id = newId;
-}
-
 bool CS::CheckCS() const {
-    return id > 0 && !name.empty() &&
+
+    return id > 0 && id < INT_MAX && !name.empty() &&
         cehvsego > 0 && cehwork >= 0 &&
         cehwork <= cehvsego &&
         (classstation == 1 || classstation == 2);
@@ -65,21 +79,18 @@ bool CS::CheckCS() const {
 
 void CS::EditCS() {
     cout << "1 - Запустить цех\n2 - Остановить цех\n";
-    int action = Diapozon(1, 2);
+    int action = GetCorrectNumber(1, 2);
 
     if (action == 1 && cehwork < cehvsego) {
         cehwork++;
-        cerr << "Запущен цех КС ID: " << id << "\n";
         cout << "Цех запущен\n";
     }
     else if (action == 2 && cehwork > 0) {
         cehwork--;
-        cerr << "Остановлен цех КС ID: " << id << "\n";
         cout << "Цех остановлен\n";
     }
     else {
         cout << "Невозможно выполнить действие\n";
-        cerr << "Не удалось изменить КС ID: " << id << "\n";
     }
 }
 

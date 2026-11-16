@@ -1,10 +1,26 @@
 #include "Pipe.h"
 #include <iostream>
 #include "Utils.h"
+#include <climits>
 
 using namespace std;
 
-int Diapozon(int min, int max);
+int Pipe::MaxID = 1;
+
+Pipe::Pipe() {
+	id = MaxID++;
+}
+
+Pipe::Pipe(int loadedId) {
+	id = loadedId;
+}
+
+void Pipe::UpdateMaxID(const unordered_map<int, Pipe>& pipes) {
+	MaxID = 1;
+	for (const auto& [id, pipe] : pipes)
+		if (id >= MaxID)
+			MaxID = id + 1;
+}
 
 ostream& operator<<(ostream& out, const Pipe& pipe) {
 	out << "ID трубы: " << pipe.id;
@@ -36,13 +52,13 @@ istream& operator>>(istream& in, Pipe& pipe) {
 	INPUT_LINE(in, pipe.name);
 
 	cout << "Введите длину: ";
-	pipe.l = Diapozon(1, 1000000);
+	pipe.l = GetCorrectNumber(1, 1000000);
 
 	cout << "Введите диаметр: ";
-	pipe.d = Diapozon(1, 1000000);
+	pipe.d = GetCorrectNumber(1, 1000000);
 
 	cout << "В ремонте? 1 - да, 0 - нет: ";
-	pipe.vremonte = Diapozon(0, 1);
+	pipe.vremonte = GetCorrectNumber(0, 1);
 	return in;
 }
 
@@ -50,19 +66,14 @@ int Pipe::getId() const {
 	return id;
 }
 
-void Pipe::setId(int newId) {
-	id = newId;
-}
-
 void Pipe::EditPipe() {
 	cout << "Сейчас в ремонте: " << vremonte << "\n";
 	cout << "Новое значение (Да - 1, Нет - 0): ";
-	vremonte = Diapozon(0, 1);
-	cerr << "Новое состояние ремонта трубы: " << vremonte << "\n";
+	vremonte = GetCorrectNumber(0, 1);
 }
 
 bool Pipe::CheckPipe() const {
-	return id > 0 && !name.empty() && l > 0 && d > 0;
+	return id > 0 && id < INT_MAX && !name.empty() && l > 0 && d > 0;
 }
 
 bool Pipe::CheckName(const string& value) const {
