@@ -20,6 +20,8 @@ public:
     friend std::ofstream& operator<<(std::ofstream& out, const Pipe& pipe);
     friend std::ifstream& operator>>(std::ifstream& in, Pipe& pipe);
     Pipe();
+    int getDiameter() const;
+    void InputForConnection(int diameter);
     explicit Pipe(int loadedId);
     static void UpdateMaxID(const std::unordered_map<int, Pipe>& pipes);
     int getId() const;

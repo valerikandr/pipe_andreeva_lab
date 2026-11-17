@@ -54,6 +54,18 @@ T GetCorrectNumber(T min, T max) {
     }
 }
 
+inline int GetDiameter() {
+    int d;
+
+    do {
+        std::cout << "Диаметр (500, 700, 1000, 1400): ";
+        d = GetCorrectNumber(500, 1400);
+    } while (d != 500 && d != 700 &&
+        d != 1000 && d != 1400);
+
+    return d;
+}
+
 template<typename Obj, typename T>
 using Filter = bool(const Obj& obj, T param);
 

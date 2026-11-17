@@ -55,7 +55,7 @@ istream& operator>>(istream& in, Pipe& pipe) {
 	pipe.l = GetCorrectNumber(1, 1000000);
 
 	cout << "Введите диаметр: ";
-	pipe.d = GetCorrectNumber(1, 1000000);
+	pipe.d = GetDiameter();
 
 	cout << "В ремонте? 1 - да, 0 - нет: ";
 	pipe.vremonte = GetCorrectNumber(0, 1);
@@ -86,4 +86,19 @@ bool Pipe::CheckRepair(bool value) const {
 
 void Pipe::SetRepair(bool value) {
 	vremonte = value;
+}
+
+int Pipe::getDiameter() const {
+	return d;
+}
+
+void Pipe::InputForConnection(int diameter) {
+	cout << "Введите название трубы: ";
+	INPUT_LINE(cin, name);
+
+	cout << "Введите длину: ";
+	l = GetCorrectNumber(1, 1000000);
+
+	d = diameter;
+	vremonte = false;
 }
